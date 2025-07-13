@@ -323,8 +323,15 @@
                                 <select id="primaryClass" name="primaryClass" class="input-field w-full px-4 py-3 rounded-lg">
                                   <option value="">Select a class</option>
                                 </select>
-
                             </div>
+                            <!-- Subclass for Primary Class -->
+                            <div id="subclassContainer_primary" class="mt-4 hidden">
+                              <label for="subclassSelect_primary" class="label block mb-2">Subclass</label>
+                              <select id="subclassSelect_primary" name="subclassSelect_primary" class="input-field w-full px-4 py-3 rounded-lg">
+                                <option value="">Select a subclass</option>
+                              </select>
+                            </div>
+
                             
                             <!-- Level -->
                             <div>
@@ -351,7 +358,14 @@
                                         <option value="">Select a class</option>
                                     </select>
                                 </div>
-                                
+                                <!-- Subclass for Multi Primary -->
+                                <div id="subclassContainer_multi" class="mt-4 hidden">
+                                  <label for="subclassSelect_multi" class="label block mb-2">Subclass</label>
+                                  <select id="subclassSelect_multi" name="subclassSelect_multi" class="input-field w-full px-4 py-3 rounded-lg">
+                                    <option value="">Select a subclass</option>
+                                  </select>
+                                </div>
+
                                 <!-- Primary Class Level -->
                                 <div>
                                     <label for="primaryClassLevel" class="label block mb-2">Level</label>
@@ -365,7 +379,14 @@
                                         <option value="">Select a class</option>
                                     </select>
                                 </div>
-                                
+                                <!-- Subclass for Secondary Class -->
+                                <div id="subclassContainer_secondary" class="mt-4 hidden">
+                                  <label for="subclassSelect_secondary" class="label block mb-2">Subclass</label>
+                                  <select id="subclassSelect_secondary" name="subclassSelect_secondary" class="input-field w-full px-4 py-3 rounded-lg">
+                                    <option value="">Select a subclass</option>
+                                  </select>
+                                </div>
+
                                 <!-- Secondary Class Level -->
                                 <div>
                                     <label for="secondaryClassLevel" class="label block mb-2">Level</label>
@@ -379,6 +400,14 @@
                                         <option value="">Select a class</option>
                                     </select>
                                 </div>
+                                <!-- Subclass for Tertiary Class -->
+                                <div id="subclassContainer_tertiary" class="mt-4 hidden">
+                                  <label for="subclassSelect_tertiary" class="label block mb-2">Subclass</label>
+                                  <select id="subclassSelect_tertiary" name="subclassSelect_tertiary" class="input-field w-full px-4 py-3 rounded-lg">
+                                    <option value="">Select a subclass</option>
+                                  </select>
+                                </div>
+
                                 
                                 <!-- Tertiary Class Level -->
                                 <div>
@@ -819,50 +848,94 @@
                 }
             }
         });
-        
-        document.addEventListener('DOMContentLoaded', () => {
-          const classSelectElements = [
-            document.getElementById('primaryClass'),
-            document.getElementById('multiPrimaryClass'),
-            document.getElementById('secondaryClass'),
-            document.getElementById('tertiaryClass')
-          ];
-        
-          if (classSelectElements.some(select => !select)) {
-            console.error('One or more class dropdown elements were not found in the DOM.');
-            return;
-          }
-        
-          function clearClassSelects() {
-            classSelectElements.forEach(select => {
-              // Keep only the first <option> ("Select a class")
-              select.innerHTML = '<option value="">Select a class</option>';
-            });
-          }
-        
-          fetch('./classes.json')
-            .then(response => {
-              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-              return response.json();
-            })
-            .then(data => {
-              clearClassSelects();
-        
-              data.forEach(cls => {
-                classSelectElements.forEach(select => {
-                  const option = document.createElement('option');
-                  option.value = cls.name;
-                  option.textContent = cls.name;
-                  select.appendChild(option);
-                });
-              });
-            })
-            .catch(error => {
-              console.error('Failed to load class data:', error);
-            });
-        });
 
-    </script>
+    //Dropdownstuff
+    // Class Dropdown Dynamic Script
+// Paste this inside your existing <script> section — no need for extra <script> tags
+
+document.addEventListener('DOMContentLoaded', () => {
+  const classSelectElements = [
+    document.getElementById('primaryClass'),
+    document.getElementById('multiPrimaryClass'),
+    document.getElementById('secondaryClass'),
+    document.getElementById('tertiaryClass')
+  ];
+
+  if (classSelectElements.some(select => !select)) {
+    console.error('One or more class dropdown elements were not found in the DOM.');
+    return;
+  }
+
+  function clearClassSelects() {
+    classSelectElements.forEach(select => {
+      // Keep only the first <option> ("Select a class")
+      select.innerHTML = '<option value="">Select a class</option>';
+    });
+  }
+
+  const classData = [
+    { "name": "Artificer", "subclasses": ["Alchemist", "Armorer", "Artillerist", "Battle Smith"] },
+    { "name": "Barbarian", "subclasses": ["Path of the Ancestral Guardian", "Path of the Battlerager", "Path of the Beast", "Path of the Berserker", "Path of the Giant", "Path of the Storm Herald", "Path of the Totem Warrior", "Path of Wild Magic", "Path of the Zealot"] },
+    { "name": "Bard", "subclasses": ["College of Creation", "College of Eloquence", "College of Glamour", "College of Lore", "College of Spirits", "College of Swords", "College of Valor", "College of Whispers"] },
+    { "name": "Blood Hunter", "subclasses": ["Order of the Ghostslayer", "Order of the Lycan", "Order of the Mutant", "Order of the Profane Soul"] },
+    { "name": "Cleric", "subclasses": ["Arcana Domain", "Death Domain", "Forge Domain", "Grave Domain", "Knowledge Domain", "Life Domain", "Light Domain", "Nature Domain", "Order Domain", "Peace Domain", "Tempest Domain", "Trickery Domain", "Twilight Domain", "War Domain", "Ambition Domain", "Solidarity Domain", "Strength Domain", "Zeal Domain"] },
+    { "name": "Druid", "subclasses": ["Circle of Dreams", "Circle of the Land", "Circle of the Moon", "Circle of the Shepherd", "Circle of Spores", "Circle of Stars", "Circle of Wildfire"] },
+    { "name": "Fighter", "subclasses": ["Arcane Archer", "Banneret", "Battle Master", "Cavalier", "Champion", "Echo Knight", "Eldritch Knight", "Psi Warrior", "Rune Knight", "Samurai"] },
+    { "name": "Monk", "subclasses": ["Way of Mercy", "Way of the Ascendant Dragon", "Way of the Astral Self", "Way of the Drunken Master", "Way of the Four Elements", "Way of the Kensei", "Way of the Long Death", "Way of the Open Hand", "Way of Shadow", "Way of the Sun Soul"] },
+    { "name": "Paladin", "subclasses": ["Oath of the Ancients", "Oath of Conquest", "Oath of the Crown", "Oath of Devotion", "Oath of Glory", "Oath of Redemption", "Oath of Vengeance", "Oath of the Watchers", "Oathbreaker"] },
+    { "name": "Ranger", "subclasses": ["Beast Master Conclave", "Drakewarden", "Fey Wanderer", "Gloom Stalker Conclave", "Horizon Walker Conclave", "Hunter Conclave", "Monster Slayer Conclave", "Swarmkeeper"] },
+    { "name": "Rogue", "subclasses": ["Arcane Trickster", "Assassin", "Inquisitive", "Mastermind", "Phantom", "Scout", "Soulknife", "Swashbuckler", "Thief"] },
+    { "name": "Sorcerer", "subclasses": ["Aberrant Mind", "Clockwork Soul", "Draconic Bloodline", "Divine Soul", "Lunar Sorcery", "Shadow Magic", "Storm Sorcery", "Wild Magic", "Pyromancy"] },
+    { "name": "Warlock", "subclasses": ["Archfey", "Celestial", "Fathomless", "Fiend", "The Genie", "Great Old One", "Hexblade", "Undead", "Undying"] },
+    { "name": "Wizard", "subclasses": ["School of Abjuration", "School of Bladesinging", "School of Chronurgy", "School of Conjuration", "School of Divination", "School of Enchantment", "School of Evocation", "School of Graviturgy", "School of Illusion", "School of Necromancy", "Order of Scribes", "School of Transmutation", "School of War Magic"] }
+  ];
+
+  clearClassSelects();
+
+  classData.forEach(cls => {
+    classSelectElements.forEach(select => {
+      const option = document.createElement('option');
+      option.value = cls.name;
+      option.textContent = cls.name;
+      select.appendChild(option);
+    });
+  });
+
+  // Dynamically create subclass dropdowns for each class select
+  const subclassTargets = [
+    { classId: 'primaryClass', containerId: 'subclassContainer_primary', selectId: 'subclassSelect_primary' },
+    { classId: 'multiPrimaryClass', containerId: 'subclassContainer_multi', selectId: 'subclassSelect_multi' },
+    { classId: 'secondaryClass', containerId: 'subclassContainer_secondary', selectId: 'subclassSelect_secondary' },
+    { classId: 'tertiaryClass', containerId: 'subclassContainer_tertiary', selectId: 'subclassSelect_tertiary' }
+  ];
+
+  subclassTargets.forEach(({ classId, containerId, selectId }) => {
+    const classDropdown = document.getElementById(classId);
+    const container = document.getElementById(containerId);
+    const select = document.getElementById(selectId);
+
+    if (!classDropdown || !container || !select) return;
+
+    classDropdown.addEventListener('change', function () {
+      const selected = this.value;
+      select.innerHTML = '<option value="">Select a subclass</option>';
+      const match = classData.find(c => c.name === selected);
+
+      if (match && match.subclasses && match.subclasses.length > 0) {
+        match.subclasses.forEach(sub => {
+          const option = document.createElement('option');
+          option.value = sub;
+          option.textContent = sub;
+          select.appendChild(option);
+        });
+        container.classList.remove('hidden');
+      } else {
+        container.classList.add('hidden');
+      }
+    });
+  });
+});
+</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95e476f7406753d3',t:'MTc1MjM2NDQ1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 </body></html>
