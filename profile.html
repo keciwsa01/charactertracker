@@ -321,21 +321,9 @@
                             <div>
                                 <label for="primaryClass" class="label block mb-2">Class</label>
                                 <select id="primaryClass" name="primaryClass" class="input-field w-full px-4 py-3 rounded-lg">
-                                    <option value="">Select a class</option>
-                                    <option value="Barbarian">Barbarian</option>
-                                    <option value="Bard">Bard</option>
-                                    <option value="Cleric">Cleric</option>
-                                    <option value="Druid">Druid</option>
-                                    <option value="Fighter">Fighter</option>
-                                    <option value="Monk">Monk</option>
-                                    <option value="Paladin">Paladin</option>
-                                    <option value="Ranger">Ranger</option>
-                                    <option value="Rogue">Rogue</option>
-                                    <option value="Sorcerer">Sorcerer</option>
-                                    <option value="Warlock">Warlock</option>
-                                    <option value="Wizard">Wizard</option>
-                                    <option value="Artificer">Artificer</option>
+                                  <option value="">Select a class</option>
                                 </select>
+
                             </div>
                             
                             <!-- Level -->
@@ -361,19 +349,6 @@
                                     <label for="multiPrimaryClass" class="label block mb-2">Primary Class</label>
                                     <select id="multiPrimaryClass" name="multiPrimaryClass" class="input-field w-full px-4 py-3 rounded-lg">
                                         <option value="">Select a class</option>
-                                        <option value="Barbarian">Barbarian</option>
-                                        <option value="Bard">Bard</option>
-                                        <option value="Cleric">Cleric</option>
-                                        <option value="Druid">Druid</option>
-                                        <option value="Fighter">Fighter</option>
-                                        <option value="Monk">Monk</option>
-                                        <option value="Paladin">Paladin</option>
-                                        <option value="Ranger">Ranger</option>
-                                        <option value="Rogue">Rogue</option>
-                                        <option value="Sorcerer">Sorcerer</option>
-                                        <option value="Warlock">Warlock</option>
-                                        <option value="Wizard">Wizard</option>
-                                        <option value="Artificer">Artificer</option>
                                     </select>
                                 </div>
                                 
@@ -388,19 +363,6 @@
                                     <label for="secondaryClass" class="label block mb-2">Secondary Class</label>
                                     <select id="secondaryClass" name="secondaryClass" class="input-field w-full px-4 py-3 rounded-lg">
                                         <option value="">Select a class</option>
-                                        <option value="Barbarian">Barbarian</option>
-                                        <option value="Bard">Bard</option>
-                                        <option value="Cleric">Cleric</option>
-                                        <option value="Druid">Druid</option>
-                                        <option value="Fighter">Fighter</option>
-                                        <option value="Monk">Monk</option>
-                                        <option value="Paladin">Paladin</option>
-                                        <option value="Ranger">Ranger</option>
-                                        <option value="Rogue">Rogue</option>
-                                        <option value="Sorcerer">Sorcerer</option>
-                                        <option value="Warlock">Warlock</option>
-                                        <option value="Wizard">Wizard</option>
-                                        <option value="Artificer">Artificer</option>
                                     </select>
                                 </div>
                                 
@@ -415,19 +377,6 @@
                                     <label for="tertiaryClass" class="label block mb-2">Tertiary Class</label>
                                     <select id="tertiaryClass" name="tertiaryClass" class="input-field w-full px-4 py-3 rounded-lg">
                                         <option value="">Select a class</option>
-                                        <option value="Barbarian">Barbarian</option>
-                                        <option value="Bard">Bard</option>
-                                        <option value="Cleric">Cleric</option>
-                                        <option value="Druid">Druid</option>
-                                        <option value="Fighter">Fighter</option>
-                                        <option value="Monk">Monk</option>
-                                        <option value="Paladin">Paladin</option>
-                                        <option value="Ranger">Ranger</option>
-                                        <option value="Rogue">Rogue</option>
-                                        <option value="Sorcerer">Sorcerer</option>
-                                        <option value="Warlock">Warlock</option>
-                                        <option value="Wizard">Wizard</option>
-                                        <option value="Artificer">Artificer</option>
                                     </select>
                                 </div>
                                 
@@ -870,6 +819,49 @@
                 }
             }
         });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+          const classSelectElements = [
+            document.getElementById('primaryClass'),
+            document.getElementById('multiPrimaryClass'),
+            document.getElementById('secondaryClass'),
+            document.getElementById('tertiaryClass')
+          ];
+        
+          if (classSelectElements.some(select => !select)) {
+            console.error('One or more class dropdown elements were not found in the DOM.');
+            return;
+          }
+        
+          function clearClassSelects() {
+            classSelectElements.forEach(select => {
+              // Keep only the first <option> ("Select a class")
+              select.innerHTML = '<option value="">Select a class</option>';
+            });
+          }
+        
+          fetch('./classes.json')
+            .then(response => {
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+              return response.json();
+            })
+            .then(data => {
+              clearClassSelects();
+        
+              data.forEach(cls => {
+                classSelectElements.forEach(select => {
+                  const option = document.createElement('option');
+                  option.value = cls.name;
+                  option.textContent = cls.name;
+                  select.appendChild(option);
+                });
+              });
+            })
+            .catch(error => {
+              console.error('Failed to load class data:', error);
+            });
+        });
+
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95e476f7406753d3',t:'MTc1MjM2NDQ1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
