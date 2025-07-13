@@ -1,0 +1,876 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&amp;D Character Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=MedievalSharp&amp;display=swap">
+    <style>
+        :root {
+            /* Dark mode (default) */
+            --primary: #8b5cf6;
+            --primary-dark: #6d28d9;
+            --secondary: #c4b5fd;
+            --accent: #f59e0b;
+            --background: #1e293b;
+            --text: #f3f4f6;
+            --paper: #334155;
+            --preview-bg: #475569;
+            --input-bg: rgba(15, 23, 42, 0.3);
+            --header-bg: linear-gradient(to right, #6d28d9, #8b5cf6);
+            --multiclass-bg: #1e293b;
+            --preview-panel-bg: #334155;
+            --preview-item-bg: #475569;
+            --dropdown-text: #f3f4f6; /* Text color for dropdown options in dark mode */
+        }
+        
+        .light-mode {
+            --primary: #6d28d9;
+            --primary-dark: #4c1d95;
+            --secondary: #8b5cf6;
+            --accent: #d97706;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --paper: #f1f5f9;
+            --preview-bg: #e2e8f0;
+            --input-bg: rgba(15, 23, 42, 0.05);
+            --header-bg: linear-gradient(to right, #4c1d95, #6d28d9);
+            --multiclass-bg: #e2e8f0;
+            --preview-panel-bg: #cbd5e1;
+            --preview-item-bg: #e2e8f0;
+            --dropdown-text: #1e293b; /* Text color for dropdown options in light mode */
+        }
+        
+        body {
+            font-family: 'MedievalSharp', cursive;
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        .parchment {
+            background-color: var(--paper);
+            border: 2px solid var(--accent);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field {
+            background-color: var(--input-bg);
+            border: 1px solid var(--accent);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+        
+        /* Fix for dropdown text color */
+        select.input-field {
+            color: var(--text);
+        }
+        
+        select.input-field option {
+            background-color: var(--paper);
+            color: var(--dropdown-text);
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3);
+            outline: none;
+        }
+        
+        .label {
+            color: var(--secondary);
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+        }
+        
+        .character-header {
+            background: var(--header-bg);
+            border-bottom: 2px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+        
+        .dragon-icon {
+            fill: var(--accent);
+            transition: fill 0.3s ease;
+        }
+        
+        .multiclass-section {
+            transition: all 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        
+        .multiclass-section.active {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+        
+        .multiclass-bg {
+            background-color: var(--multiclass-bg);
+            transition: background-color 0.3s ease;
+        }
+        
+        .checkbox-custom {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .checkbox-custom input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkmark {
+            height: 24px;
+            width: 24px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            margin-right: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-custom:hover input ~ .checkmark {
+            background-color: var(--input-bg);
+            opacity: 0.8;
+        }
+        
+        .checkbox-custom input:checked ~ .checkmark {
+            background-color: var(--primary);
+        }
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        
+        .checkbox-custom input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .checkbox-custom .checkmark:after {
+            left: 9px;
+            top: 5px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .preview-panel {
+            background-color: var(--preview-panel-bg);
+            transition: all 0.3s ease;
+        }
+        
+        .preview-item {
+            background-color: var(--preview-item-bg);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            border-radius: 15px;
+            background-color: var(--paper);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent);
+        }
+        
+        .theme-toggle-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle.light .theme-toggle-thumb {
+            transform: translateX(30px);
+        }
+        
+        .theme-icon {
+            position: absolute;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-icon-moon {
+            left: 8px;
+            fill: #f3f4f6;
+            opacity: 1;
+        }
+        
+        .theme-icon-sun {
+            right: 8px;
+            fill: #f59e0b;
+            opacity: 0.6;
+        }
+        
+        .light-mode .theme-icon-moon {
+            opacity: 0.6;
+        }
+        
+        .light-mode .theme-icon-sun {
+            opacity: 1;
+        }
+        
+        .auto-save-indicator {
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+        
+        .auto-save-indicator.active {
+            opacity: 1;
+        }
+        
+        .text-muted {
+            color: #94a3b8;
+            transition: color 0.3s ease;
+        }
+        
+        .light-mode .text-muted {
+            color: #64748b;
+        }
+        
+        .text-highlight {
+            color: #f3f4f6;
+            transition: color 0.3s ease;
+        }
+        
+        .light-mode .text-highlight {
+            color: #1e293b;
+        }
+        
+        .text-accent {
+            color: var(--accent);
+            transition: color 0.3s ease;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.col-span-full{grid-column:1 / -1}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mr-1{margin-right:0.25rem}.mr-3{margin-right:0.75rem}.mr-4{margin-right:1rem}.mt-2{margin-top:0.5rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-4{height:1rem}.w-10{width:2.5rem}.w-4{width:1rem}.w-full{width:100%}.max-w-4xl{max-width:56rem}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.overflow-hidden{overflow:hidden}.rounded-lg{border-radius:0.5rem}.border-t-2{border-top-width:2px}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-4{padding-left:1rem;padding-right:1rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pl-5{padding-left:1.25rem}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-bold{font-weight:700}.text-green-400{--tw-text-opacity:1;color:rgb(74 222 128 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+<body class="">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="parchment rounded-lg overflow-hidden">
+            <!-- Character Header -->
+            <div class="character-header p-6 flex items-center justify-between">
+                <h1 class="text-3xl font-bold text-white flex items-center">
+                    <svg class="dragon-icon w-10 h-10 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20.5,3.5C19,3.5 17.5,4.33 17.5,6V6.67L14.5,5.67C14.5,5.67 9.5,3.67 5.5,6.67C5.5,6.67 2.5,8.33 2.5,12.67C2.5,12.67 1.5,16.33 5.5,18.33C5.5,18.33 7.5,19.33 9.5,18.33C9.5,18.33 11.5,17.33 10.5,15.33C10.5,15.33 9.5,13.67 7.5,14.33C7.5,14.33 5.5,14.67 6.5,12.67C6.5,12.67 7.83,10.33 10.5,11.67C10.5,11.67 12.5,12.67 14.5,11.33L15.83,10.67L13.5,9.67V8.33C13.5,8.33 17.5,9.67 18.5,13.33C18.5,13.33 19.5,15.67 18.5,17.33C18.5,17.33 17.5,19.33 14.5,19.33C14.5,19.33 12.5,19.33 12.5,17.33H10.5C10.5,17.33 10.5,21.33 14.5,21.33C14.5,21.33 18.5,21.33 20.5,18.33C20.5,18.33 22.5,16.33 21.5,12.33C21.5,12.33 22.5,9.33 19.5,7.33V6C19.5,5.33 20,5 20.5,5C21,5 21.5,5.33 21.5,6V7H22.5V6C22.5,4.33 21.5,3.5 20.5,3.5M11.5,9.67C11.5,10.22 11.05,10.67 10.5,10.67C9.95,10.67 9.5,10.22 9.5,9.67C9.5,9.11 9.95,8.67 10.5,8.67C11.05,8.67 11.5,9.11 11.5,9.67Z"></path>
+                    </svg>
+                    Character Profile
+                </h1>
+                <div class="flex items-center">
+                    <div class="auto-save-indicator mr-4 text-sm text-green-400 flex items-center">
+                        <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path>
+                        </svg>
+                        Auto-saved
+                    </div>
+                    <div class="theme-toggle" id="themeToggle">
+                        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24">
+                            <path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z"></path>
+                        </svg>
+                        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24">
+                            <path d="M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,2L14.39,5.42C13.65,5.15 12.84,5 12,5C11.16,5 10.35,5.15 9.61,5.42L12,2M3.34,7L7.5,6.65C6.9,7.16 6.36,7.78 5.94,8.5C5.5,9.24 5.25,10 5.11,10.79L3.34,7M3.36,17L5.12,13.23C5.26,14 5.53,14.78 5.95,15.5C6.37,16.24 6.91,16.86 7.5,17.37L3.36,17M20.65,7L18.88,10.79C18.74,10 18.47,9.23 18.05,8.5C17.63,7.78 17.1,7.15 16.5,6.64L20.65,7M20.64,17L16.5,17.36C17.09,16.85 17.62,16.22 18.04,15.5C18.46,14.77 18.73,14 18.87,13.21L20.64,17M12,22L9.59,18.56C10.33,18.83 11.14,19 12,19C12.82,19 13.63,18.83 14.37,18.56L12,22Z"></path>
+                        </svg>
+                        <div class="theme-toggle-thumb"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Character Form -->
+            <form id="characterForm" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Character Name -->
+                <div class="col-span-full">
+                    <label for="characterName" class="label block mb-2">Character Name</label>
+                    <input type="text" id="characterName" name="characterName" class="input-field w-full px-4 py-3 rounded-lg text-xl" placeholder="Enter character name">
+                </div>
+                
+                <!-- Class Section -->
+                <div class="col-span-full">
+                    <!-- Multiclass Toggle -->
+                    <div class="flex items-center mb-4">
+                        <label class="checkbox-custom">
+                            <input type="checkbox" id="multiclassToggle">
+                            <span class="checkmark"></span>
+                            <span class="text-lg font-bold text-secondary">Multiclass Character</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Single Class (Default) -->
+                    <div id="singleClassSection" class="">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Primary Class -->
+                            <div>
+                                <label for="primaryClass" class="label block mb-2">Class</label>
+                                <select id="primaryClass" name="primaryClass" class="input-field w-full px-4 py-3 rounded-lg">
+                                    <option value="">Select a class</option>
+                                    <option value="Barbarian">Barbarian</option>
+                                    <option value="Bard">Bard</option>
+                                    <option value="Cleric">Cleric</option>
+                                    <option value="Druid">Druid</option>
+                                    <option value="Fighter">Fighter</option>
+                                    <option value="Monk">Monk</option>
+                                    <option value="Paladin">Paladin</option>
+                                    <option value="Ranger">Ranger</option>
+                                    <option value="Rogue">Rogue</option>
+                                    <option value="Sorcerer">Sorcerer</option>
+                                    <option value="Warlock">Warlock</option>
+                                    <option value="Wizard">Wizard</option>
+                                    <option value="Artificer">Artificer</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Level -->
+                            <div>
+                                <label for="characterLevel" class="label block mb-2">Level</label>
+                                <input type="number" id="characterLevel" name="characterLevel" class="input-field w-full px-4 py-3 rounded-lg" min="1" max="20" value="1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Multiclass Section (Hidden by default) -->
+                    <div id="multiclassSection" class="multiclass-section">
+                        <div class="multiclass-bg p-4 rounded-lg mb-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                <!-- Overall Level Display -->
+                                <div class="col-span-full">
+                                    <label class="label block mb-2">Overall Character Level</label>
+                                    <div id="overallLevel" class="text-2xl font-bold text-accent">1</div>
+                                </div>
+                                
+                                <!-- Primary Class -->
+                                <div>
+                                    <label for="multiPrimaryClass" class="label block mb-2">Primary Class</label>
+                                    <select id="multiPrimaryClass" name="multiPrimaryClass" class="input-field w-full px-4 py-3 rounded-lg">
+                                        <option value="">Select a class</option>
+                                        <option value="Barbarian">Barbarian</option>
+                                        <option value="Bard">Bard</option>
+                                        <option value="Cleric">Cleric</option>
+                                        <option value="Druid">Druid</option>
+                                        <option value="Fighter">Fighter</option>
+                                        <option value="Monk">Monk</option>
+                                        <option value="Paladin">Paladin</option>
+                                        <option value="Ranger">Ranger</option>
+                                        <option value="Rogue">Rogue</option>
+                                        <option value="Sorcerer">Sorcerer</option>
+                                        <option value="Warlock">Warlock</option>
+                                        <option value="Wizard">Wizard</option>
+                                        <option value="Artificer">Artificer</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Primary Class Level -->
+                                <div>
+                                    <label for="primaryClassLevel" class="label block mb-2">Level</label>
+                                    <input type="number" id="primaryClassLevel" name="primaryClassLevel" class="input-field w-full px-4 py-3 rounded-lg" min="1" max="20" value="1">
+                                </div>
+                                
+                                <!-- Secondary Class -->
+                                <div>
+                                    <label for="secondaryClass" class="label block mb-2">Secondary Class</label>
+                                    <select id="secondaryClass" name="secondaryClass" class="input-field w-full px-4 py-3 rounded-lg">
+                                        <option value="">Select a class</option>
+                                        <option value="Barbarian">Barbarian</option>
+                                        <option value="Bard">Bard</option>
+                                        <option value="Cleric">Cleric</option>
+                                        <option value="Druid">Druid</option>
+                                        <option value="Fighter">Fighter</option>
+                                        <option value="Monk">Monk</option>
+                                        <option value="Paladin">Paladin</option>
+                                        <option value="Ranger">Ranger</option>
+                                        <option value="Rogue">Rogue</option>
+                                        <option value="Sorcerer">Sorcerer</option>
+                                        <option value="Warlock">Warlock</option>
+                                        <option value="Wizard">Wizard</option>
+                                        <option value="Artificer">Artificer</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Secondary Class Level -->
+                                <div>
+                                    <label for="secondaryClassLevel" class="label block mb-2">Level</label>
+                                    <input type="number" id="secondaryClassLevel" name="secondaryClassLevel" class="input-field w-full px-4 py-3 rounded-lg" min="0" max="19" value="0">
+                                </div>
+                                
+                                <!-- Tertiary Class -->
+                                <div>
+                                    <label for="tertiaryClass" class="label block mb-2">Tertiary Class</label>
+                                    <select id="tertiaryClass" name="tertiaryClass" class="input-field w-full px-4 py-3 rounded-lg">
+                                        <option value="">Select a class</option>
+                                        <option value="Barbarian">Barbarian</option>
+                                        <option value="Bard">Bard</option>
+                                        <option value="Cleric">Cleric</option>
+                                        <option value="Druid">Druid</option>
+                                        <option value="Fighter">Fighter</option>
+                                        <option value="Monk">Monk</option>
+                                        <option value="Paladin">Paladin</option>
+                                        <option value="Ranger">Ranger</option>
+                                        <option value="Rogue">Rogue</option>
+                                        <option value="Sorcerer">Sorcerer</option>
+                                        <option value="Warlock">Warlock</option>
+                                        <option value="Wizard">Wizard</option>
+                                        <option value="Artificer">Artificer</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Tertiary Class Level -->
+                                <div>
+                                    <label for="tertiaryClassLevel" class="label block mb-2">Level</label>
+                                    <input type="number" id="tertiaryClassLevel" name="tertiaryClassLevel" class="input-field w-full px-4 py-3 rounded-lg" min="0" max="19" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Race -->
+                <div>
+                    <label for="characterRace" class="label block mb-2">Race</label>
+                    <select id="characterRace" name="characterRace" class="input-field w-full px-4 py-3 rounded-lg">
+                        <option value="">Select a race</option>
+                        <option value="Dragonborn">Dragonborn</option>
+                        <option value="Dwarf">Dwarf</option>
+                        <option value="Elf">Elf</option>
+                        <option value="Gnome">Gnome</option>
+                        <option value="Half-Elf">Half-Elf</option>
+                        <option value="Half-Orc">Half-Orc</option>
+                        <option value="Halfling">Halfling</option>
+                        <option value="Human">Human</option>
+                        <option value="Tiefling">Tiefling</option>
+                        <option value="Aarakocra">Aarakocra</option>
+                        <option value="Genasi">Genasi</option>
+                        <option value="Goliath">Goliath</option>
+                        <option value="Aasimar">Aasimar</option>
+                    </select>
+                </div>
+                
+                <!-- Background -->
+                <div>
+                    <label for="characterBackground" class="label block mb-2">Background</label>
+                    <select id="characterBackground" name="characterBackground" class="input-field w-full px-4 py-3 rounded-lg">
+                        <option value="">Select a background</option>
+                        <option value="Acolyte">Acolyte</option>
+                        <option value="Charlatan">Charlatan</option>
+                        <option value="Criminal">Criminal</option>
+                        <option value="Entertainer">Entertainer</option>
+                        <option value="Folk Hero">Folk Hero</option>
+                        <option value="Guild Artisan">Guild Artisan</option>
+                        <option value="Hermit">Hermit</option>
+                        <option value="Noble">Noble</option>
+                        <option value="Outlander">Outlander</option>
+                        <option value="Sage">Sage</option>
+                        <option value="Sailor">Sailor</option>
+                        <option value="Soldier">Soldier</option>
+                        <option value="Urchin">Urchin</option>
+                    </select>
+                </div>
+                
+                <!-- Experience Points -->
+                <div>
+                    <label for="characterXP" class="label block mb-2">Experience Points (XP)</label>
+                    <input type="number" id="characterXP" name="characterXP" class="input-field w-full px-4 py-3 rounded-lg" min="0" value="0">
+                </div>
+            </form>
+            
+            <!-- Character Preview -->
+            <div class="p-6 preview-panel border-t-2 border-accent">
+                <h2 class="text-2xl font-bold mb-4 text-accent">Character Preview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="preview-item p-4 rounded-lg">
+                        <p class="text-muted">Name: <span id="previewName" class="text-highlight">-</span></p>
+                        <div id="previewSingleClass" class="">
+                            <p class="text-muted">Class: <span id="previewClass" class="text-highlight">-</span></p>
+                            <p class="text-muted">Level: <span id="previewLevel" class="text-highlight">1</span></p>
+                        </div>
+                        <div id="previewMultiClass" class="hidden">
+                            <p class="text-muted">Classes:</p>
+                            <ul class="list-disc pl-5 text-highlight">
+                                <li id="previewPrimaryClass">-</li>
+                                <li id="previewSecondaryClass" class="hidden">-</li>
+                                <li id="previewTertiaryClass" class="hidden">-</li>
+                            </ul>
+                            <p class="text-muted mt-2">Overall Level: <span id="previewOverallLevel" class="text-highlight">1</span></p>
+                        </div>
+                    </div>
+                    <div class="preview-item p-4 rounded-lg">
+                        <p class="text-muted">Race: <span id="previewRace" class="text-highlight">-</span></p>
+                        <p class="text-muted">Background: <span id="previewBackground" class="text-highlight">-</span></p>
+                        <p class="text-muted">XP: <span id="previewXP" class="text-highlight">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store character data that can be accessed by other pages
+        let characterData = {
+            name: '',
+            isMulticlass: false,
+            class: '',
+            level: 1,
+            multiclassData: {
+                primaryClass: '',
+                primaryLevel: 1,
+                secondaryClass: '',
+                secondaryLevel: 0,
+                tertiaryClass: '',
+                tertiaryLevel: 0,
+                overallLevel: 1
+            },
+            race: '',
+            background: '',
+            xp: 0,
+            theme: 'dark' // Default theme
+        };
+        
+        // DOM elements
+        const form = document.getElementById('characterForm');
+        const nameInput = document.getElementById('characterName');
+        const raceSelect = document.getElementById('characterRace');
+        const backgroundSelect = document.getElementById('characterBackground');
+        const xpInput = document.getElementById('characterXP');
+        const autoSaveIndicator = document.querySelector('.auto-save-indicator');
+        const themeToggle = document.getElementById('themeToggle');
+        
+        // Single class elements
+        const primaryClassSelect = document.getElementById('primaryClass');
+        const characterLevelInput = document.getElementById('characterLevel');
+        
+        // Multiclass elements
+        const multiclassToggle = document.getElementById('multiclassToggle');
+        const singleClassSection = document.getElementById('singleClassSection');
+        const multiclassSection = document.getElementById('multiclassSection');
+        const multiPrimaryClassSelect = document.getElementById('multiPrimaryClass');
+        const primaryClassLevelInput = document.getElementById('primaryClassLevel');
+        const secondaryClassSelect = document.getElementById('secondaryClass');
+        const secondaryClassLevelInput = document.getElementById('secondaryClassLevel');
+        const tertiaryClassSelect = document.getElementById('tertiaryClass');
+        const tertiaryClassLevelInput = document.getElementById('tertiaryClassLevel');
+        const overallLevelDisplay = document.getElementById('overallLevel');
+        
+        // Preview elements
+        const previewName = document.getElementById('previewName');
+        const previewSingleClass = document.getElementById('previewSingleClass');
+        const previewMultiClass = document.getElementById('previewMultiClass');
+        const previewClass = document.getElementById('previewClass');
+        const previewLevel = document.getElementById('previewLevel');
+        const previewPrimaryClass = document.getElementById('previewPrimaryClass');
+        const previewSecondaryClass = document.getElementById('previewSecondaryClass');
+        const previewTertiaryClass = document.getElementById('previewTertiaryClass');
+        const previewOverallLevel = document.getElementById('previewOverallLevel');
+        const previewRace = document.getElementById('previewRace');
+        const previewBackground = document.getElementById('previewBackground');
+        const previewXP = document.getElementById('previewXP');
+        
+        // Auto-save functionality
+        let autoSaveTimeout;
+        
+        function showAutoSaveIndicator() {
+            autoSaveIndicator.classList.add('active');
+            
+            // Hide the indicator after 2 seconds
+            setTimeout(() => {
+                autoSaveIndicator.classList.remove('active');
+            }, 2000);
+        }
+        
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', function() {
+            const body = document.body;
+            
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                themeToggle.classList.remove('light');
+                characterData.theme = 'dark';
+            } else {
+                body.classList.add('light-mode');
+                themeToggle.classList.add('light');
+                characterData.theme = 'light';
+            }
+            
+            // Save theme preference
+            localStorage.setItem('dndCharacterTheme', characterData.theme);
+            updateCharacterData();
+        });
+        
+        // Toggle multiclass section
+        multiclassToggle.addEventListener('change', function() {
+            if (this.checked) {
+                multiclassSection.classList.add('active');
+                singleClassSection.classList.add('hidden');
+                previewSingleClass.classList.add('hidden');
+                previewMultiClass.classList.remove('hidden');
+                characterData.isMulticlass = true;
+                
+                // Initialize multiclass with single class data
+                if (primaryClassSelect.value) {
+                    multiPrimaryClassSelect.value = primaryClassSelect.value;
+                }
+                primaryClassLevelInput.value = characterLevelInput.value;
+                updateMulticlassLevels();
+            } else {
+                multiclassSection.classList.remove('active');
+                singleClassSection.classList.remove('hidden');
+                previewSingleClass.classList.remove('hidden');
+                previewMultiClass.classList.add('hidden');
+                characterData.isMulticlass = false;
+                
+                // Update single class with primary multiclass data
+                if (multiPrimaryClassSelect.value) {
+                    primaryClassSelect.value = multiPrimaryClassSelect.value;
+                }
+                
+                // Calculate total level from multiclass
+                const totalLevel = calculateTotalLevel();
+                characterLevelInput.value = totalLevel;
+                updateCharacterData();
+            }
+            updatePreview();
+        });
+        
+        // Calculate total level from multiclass levels
+        function calculateTotalLevel() {
+            const primary = parseInt(primaryClassLevelInput.value) || 0;
+            const secondary = parseInt(secondaryClassLevelInput.value) || 0;
+            const tertiary = parseInt(tertiaryClassLevelInput.value) || 0;
+            return primary + secondary + tertiary;
+        }
+        
+        // Update multiclass levels and enforce max level of 20
+        function updateMulticlassLevels() {
+            const primary = parseInt(primaryClassLevelInput.value) || 0;
+            const secondary = parseInt(secondaryClassLevelInput.value) || 0;
+            const tertiary = parseInt(tertiaryClassLevelInput.value) || 0;
+            
+            const total = primary + secondary + tertiary;
+            
+            // Enforce max level of 20
+            if (total > 20) {
+                // Adjust tertiary first, then secondary if needed
+                if (tertiary > 0) {
+                    tertiaryClassLevelInput.value = Math.max(0, tertiary - (total - 20));
+                }
+                
+                // If still over 20, adjust secondary
+                const newTotal = parseInt(primaryClassLevelInput.value) + 
+                                parseInt(secondaryClassLevelInput.value) + 
+                                parseInt(tertiaryClassLevelInput.value);
+                                
+                if (newTotal > 20) {
+                    secondaryClassLevelInput.value = Math.max(0, secondary - (newTotal - 20));
+                }
+            }
+            
+            // Update overall level display
+            const finalTotal = calculateTotalLevel();
+            overallLevelDisplay.textContent = finalTotal;
+            
+            // Show/hide secondary and tertiary class in preview
+            if (secondary > 0 && secondaryClassSelect.value) {
+                previewSecondaryClass.classList.remove('hidden');
+            } else {
+                previewSecondaryClass.classList.add('hidden');
+            }
+            
+            if (tertiary > 0 && tertiaryClassSelect.value) {
+                previewTertiaryClass.classList.remove('hidden');
+            } else {
+                previewTertiaryClass.classList.add('hidden');
+            }
+            
+            updateCharacterData();
+        }
+        
+        // Update preview in real-time
+        function updatePreview() {
+            previewName.textContent = nameInput.value || '-';
+            previewRace.textContent = raceSelect.value || '-';
+            previewBackground.textContent = backgroundSelect.value || '-';
+            previewXP.textContent = xpInput.value || '-';
+            
+            if (characterData.isMulticlass) {
+                // Multiclass preview
+                const primaryLevel = parseInt(primaryClassLevelInput.value) || 0;
+                const secondaryLevel = parseInt(secondaryClassLevelInput.value) || 0;
+                const tertiaryLevel = parseInt(tertiaryClassLevelInput.value) || 0;
+                
+                previewPrimaryClass.textContent = 
+                    multiPrimaryClassSelect.value ? 
+                    `${multiPrimaryClassSelect.value} (Level ${primaryLevel})` : '-';
+                
+                previewSecondaryClass.textContent = 
+                    secondaryClassSelect.value && secondaryLevel > 0 ? 
+                    `${secondaryClassSelect.value} (Level ${secondaryLevel})` : '-';
+                
+                previewTertiaryClass.textContent = 
+                    tertiaryClassSelect.value && tertiaryLevel > 0 ? 
+                    `${tertiaryClassSelect.value} (Level ${tertiaryLevel})` : '-';
+                
+                previewOverallLevel.textContent = calculateTotalLevel();
+            } else {
+                // Single class preview
+                previewClass.textContent = primaryClassSelect.value || '-';
+                previewLevel.textContent = characterLevelInput.value || '-';
+            }
+        }
+        
+        // Update character data object and auto-save
+        function updateCharacterData() {
+            // Clear any existing timeout
+            clearTimeout(autoSaveTimeout);
+            
+            // Set a new timeout to save after 500ms of inactivity
+            autoSaveTimeout = setTimeout(() => {
+                if (characterData.isMulticlass) {
+                    characterData.multiclassData = {
+                        primaryClass: multiPrimaryClassSelect.value,
+                        primaryLevel: parseInt(primaryClassLevelInput.value) || 0,
+                        secondaryClass: secondaryClassSelect.value,
+                        secondaryLevel: parseInt(secondaryClassLevelInput.value) || 0,
+                        tertiaryClass: tertiaryClassSelect.value,
+                        tertiaryLevel: parseInt(tertiaryClassLevelInput.value) || 0,
+                        overallLevel: calculateTotalLevel()
+                    };
+                    characterData.class = multiPrimaryClassSelect.value;
+                    characterData.level = calculateTotalLevel();
+                } else {
+                    characterData.class = primaryClassSelect.value;
+                    characterData.level = parseInt(characterLevelInput.value) || 1;
+                }
+                
+                characterData.name = nameInput.value;
+                characterData.race = raceSelect.value;
+                characterData.background = backgroundSelect.value;
+                characterData.xp = parseInt(xpInput.value) || 0;
+                
+                // Store in localStorage for persistence between pages
+                localStorage.setItem('dndCharacterData', JSON.stringify(characterData));
+                
+                // Show auto-save indicator
+                showAutoSaveIndicator();
+                
+                // This data will be available to other pages
+                if (window.parent && window.parent.updateCharacterData) {
+                    window.parent.updateCharacterData(characterData);
+                }
+            }, 500);
+        }
+        
+        // Add event listeners to form inputs for auto-saving
+        const formInputs = form.querySelectorAll('input, select');
+        formInputs.forEach(input => {
+            if (input.type === 'checkbox') {
+                input.addEventListener('change', function() {
+                    updateCharacterData();
+                    updatePreview();
+                });
+            } else if (input.tagName === 'SELECT') {
+                input.addEventListener('change', function() {
+                    updateCharacterData();
+                    updatePreview();
+                });
+            } else {
+                input.addEventListener('input', function() {
+                    updateCharacterData();
+                    updatePreview();
+                });
+            }
+        });
+        
+        // Special handling for multiclass inputs
+        primaryClassLevelInput.addEventListener('input', function() {
+            updateMulticlassLevels();
+            updatePreview();
+        });
+        
+        secondaryClassLevelInput.addEventListener('input', function() {
+            updateMulticlassLevels();
+            updatePreview();
+        });
+        
+        tertiaryClassLevelInput.addEventListener('input', function() {
+            updateMulticlassLevels();
+            updatePreview();
+        });
+        
+        // Load character data and theme if it exists
+        window.addEventListener('DOMContentLoaded', function() {
+            // Load theme preference
+            const savedTheme = localStorage.getItem('dndCharacterTheme');
+            if (savedTheme) {
+                if (savedTheme === 'light') {
+                    document.body.classList.add('light-mode');
+                    themeToggle.classList.add('light');
+                    characterData.theme = 'light';
+                } else {
+                    characterData.theme = 'dark';
+                }
+            }
+            
+            // Load character data
+            const savedData = localStorage.getItem('dndCharacterData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    
+                    // Load basic character data
+                    nameInput.value = parsedData.name || '';
+                    raceSelect.value = parsedData.race || '';
+                    backgroundSelect.value = parsedData.background || '';
+                    xpInput.value = parsedData.xp || 0;
+                    
+                    // Handle multiclass data if available
+                    if (parsedData.isMulticlass) {
+                        multiclassToggle.checked = true;
+                        multiclassSection.classList.add('active');
+                        singleClassSection.classList.add('hidden');
+                        previewSingleClass.classList.add('hidden');
+                        previewMultiClass.classList.remove('hidden');
+                        
+                        // Load multiclass data
+                        if (parsedData.multiclassData) {
+                            multiPrimaryClassSelect.value = parsedData.multiclassData.primaryClass || '';
+                            primaryClassLevelInput.value = parsedData.multiclassData.primaryLevel || 1;
+                            secondaryClassSelect.value = parsedData.multiclassData.secondaryClass || '';
+                            secondaryClassLevelInput.value = parsedData.multiclassData.secondaryLevel || 0;
+                            tertiaryClassSelect.value = parsedData.multiclassData.tertiaryClass || '';
+                            tertiaryClassLevelInput.value = parsedData.multiclassData.tertiaryLevel || 0;
+                            
+                            updateMulticlassLevels();
+                        }
+                    } else {
+                        // Load single class data
+                        primaryClassSelect.value = parsedData.class || '';
+                        characterLevelInput.value = parsedData.level || 1;
+                    }
+                    
+                    characterData = parsedData;
+                    updatePreview();
+                } catch (e) {
+                    console.error("Error loading saved character data:", e);
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95e476f7406753d3',t:'MTc1MjM2NDQ1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+
+</body></html>
